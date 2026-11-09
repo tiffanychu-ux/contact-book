@@ -34,6 +34,8 @@
   .gate{background:var(--card);border-radius:16px;padding:28px 20px;margin-top:16px;text-align:center;border:2px solid var(--line)}
   .gate h2{margin:0 0 8px;font-size:22px}
   .gate p{color:var(--ink2);margin:6px 0 16px}
+  .login{display:flex;gap:8px;max-width:340px;margin:0 auto}
+  .login input{flex:1;font:inherit;font-size:20px;letter-spacing:.2em;text-align:center;padding:9px 11px;border-radius:10px;border:2px solid var(--line)}
   .warn{background:#fff4dd;border:2px solid #f0d9a8;color:#8a5200;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:15px}
   .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:14px}
   .bar label{font-weight:900}
@@ -104,9 +106,12 @@
   </header>
 
   <div id="gate" class="gate">
-    <h2>請先登入</h2>
-    <p>用你的 Google 帳號登入後，才能修改每週的聯絡簿內容。</p>
-    <button class="b-main" id="btnIn">🔑 用 Google 帳號登入</button>
+    <h2>請輸入後台密碼</h2>
+    <p>輸入密碼後，才能修改每週的聯絡簿內容。</p>
+    <form id="loginForm" class="login" onsubmit="return false">
+      <input id="pw" type="password" inputmode="numeric" autocomplete="current-password" placeholder="密碼" aria-label="後台密碼">
+      <button class="b-main" id="btnIn" type="submit">🔑 登入</button>
+    </form>
     <div id="gateMsg"></div>
   </div>
 
@@ -134,7 +139,7 @@
 
 <script type="module">
 import { loadFirebase, weekId, addDays, rangeText } from "./js/fb.js";
-import { ADMIN_EMAILS } from "./js/firebase-config.js";
+import { ADMIN_EMAIL } from "./js/firebase-config.js";
 import { SEED_WEEKS, blankWeek } from "./js/seed.js";
 
 const $ = s => document.querySelector(s);
@@ -403,10 +408,23 @@ async function boot() {
     $("#gateMsg").innerHTML = `<div class="warn">還沒有設定 Firebase（js/firebase-config.js），暫時無法登入。</div>`;
     $("#btnIn").disabled = true; return;
   }
-  const { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = fb.au;
-  $("#btnIn").onclick = async () => {
-    try { await signInWithPopup(fb.auth, new GoogleAuthProvider()); }
-    catch (e) { $("#gateMsg").innerHTML = `<div class="warn">登入沒有成功：${esc(e.code || e.message)}</div>`; }
+  const { onAuthStateChanged, signInWithEmailAndPassword, signOut } = fb.au;
+  $("#loginForm").onsubmit = async e => {
+    e.preventDefault();
+    const pw = $("#pw").value;
+    if (!pw) return;
+    $("#btnIn").disabled = true; $("#gateMsg").innerHTML = "";
+    try { await signInWithEmailAndPassword(fb.auth, ADMIN_EMAIL, pw); $("#pw").value = ""; }
+    catch (e) {
+      const c = e.code || "";
+      const msg = c.includes("invalid-credential") || c.includes("wrong-password") ? "密碼不對，請再試一次。"
+        : c.includes("too-many-requests") ? "試太多次了，請等幾分鐘再試。"
+        : c.includes("operation-not-allowed") ? "Firebase 還沒開啟「電子郵件/密碼」登入方式。"
+        : c.includes("user-not-found") ? "Firebase 裡還沒建立後台帳號。"
+        : "登入沒有成功：" + (c || e.message);
+      $("#gateMsg").innerHTML = `<div class="warn">${esc(msg)}</div>`;
+    }
+    $("#btnIn").disabled = false;
   };
   $("#btnOut").onclick = async () => {
     if (dirty && !(await ask("有修改還沒儲存，確定要登出嗎？", "登出"))) return;
@@ -414,13 +432,9 @@ async function boot() {
   };
   onAuthStateChanged(fb.auth, async user => {
     $("#btnOut").hidden = !user;
-    $("#who").textContent = user ? user.email : "";
+    $("#who").textContent = user ? "已登入" : "";
     if (!user) { $("#gate").hidden = false; $("#app").hidden = true; $("#saveBar").hidden = true; return; }
-    if (!ADMIN_EMAILS.includes((user.email || "").toLowerCase())) {
-      $("#gate").hidden = false; $("#app").hidden = true; $("#saveBar").hidden = true;
-      $("#gateMsg").innerHTML = `<div class="warn">你登入的是 <b>${esc(user.email)}</b>，這個帳號沒有修改權限。請登出後換老師的帳號。</div>`;
-      return;
-    }
+    if ((user.email || "").toLowerCase() !== ADMIN_EMAIL.toLowerCase()) { signOut(fb.auth); return; }
     $("#gate").hidden = true; $("#app").hidden = false; $("#gateMsg").innerHTML = "";
     try { await loadAll(); } catch (e) { $("#appMsg").innerHTML = `<div class="warn">讀取資料失敗：${esc(e.code || e.message)}</div>`; }
   });

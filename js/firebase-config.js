@@ -14,8 +14,9 @@ export const firebaseConfig = {
   measurementId: "G-7100GKRX4P"
 };
 
-// 可以登入後台、修改內容的 Google 帳號（要和 firestore.rules 裡的名單一致）
-export const ADMIN_EMAILS = ["tiffanychu@phy.ncu.edu.tw"];
+// 後台登入用的帳號（密碼不寫在這裡，由 Firebase 驗證）
+// 要和 Firebase「Authentication → 使用者」裡建立的帳號、以及 firestore.rules 一致
+export const ADMIN_EMAIL = "tiffanychu@phy.ncu.edu.tw";
 
 // Firebase SDK 版本（不用改）
 export const FIREBASE_VERSION = "10.12.2";
