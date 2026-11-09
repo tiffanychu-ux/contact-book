@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>義興國小 三年級資優班 線上聯絡簿</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/front.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="assets/mascot-1.webp" alt="">
+    <div>
+      <div class="school">桃園市義興國小｜115 學年度 第一學期</div>
+      <h1>三年級資優班 線上聯絡簿</h1>
+    </div>
+  </header>
+
+  <nav class="weeks" id="weeks" aria-label="選擇週次"></nav>
+  <main id="main"><div class="loading">載入中…</div></main>
+
+  <section class="card groups">
+    <h3>📋 分組對照（依原班）</h3>
+    <table>
+      <tr><td>探索研究</td><td>A 組＝301、302<br>B 組＝303、304<br>C 組＝305、306、307</td></tr>
+      <tr><td>多元智慧</td><td>D 組＝301～304<br>E 組＝305～307</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    <img src="assets/mascot-2.webp" alt="">
+    資優班老師　Tiffany 老師 敬上<br>本頁每週更新，請以最上方「最新」週次為準
+  </footer>
+</div>
+
+<script type="module">
+import { loadFirebase } from "./js/fb.js";
+import { SEED_WEEKS } from "./js/seed.js";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const wid = w => `w${w.no}`;
+let WEEKS = [];
+
+async function loadWeeks() {
+  let note = "";
+  try {
+    const fb = await loadFirebase();
+    if (fb) {
+      const { collection, query, where, getDocs } = fb.fs;
+      const snap = await getDocs(query(collection(fb.db, "weeks"), where("published", "==", true)));
+      const list = snap.docs.map(d => d.data()).filter(w => typeof w.no === "number");
+      if (list.length) return { list, note };
+    }
+  } catch (e) {
+    console.error(e);
+    note = "目前無法連線取得最新內容，先顯示上次的資料。";
+  }
+  return { list: SEED_WEEKS.slice(), note };
+}
+
+function currentId() {
+  const h = location.hash.replace("#", "");
+  return WEEKS.some(w => wid(w) === h) ? h : wid(WEEKS[0]);
+}
+
+function renderTabs(id) {
+  $("#weeks").innerHTML = WEEKS.map((w, i) =>
+    `<button aria-current="${wid(w) === id}" data-id="${wid(w)}">第 ${w.no} 週${i === 0 ? '<span class="new">最新</span>' : ''}</button>`
+  ).join("");
+  $("#weeks").querySelectorAll("button").forEach(b => b.onclick = () => { location.hash = b.dataset.id; });
+}
+
+const list = a => (a || []).filter(x => String(x).trim());
+
+function render(note) {
+  const id = currentId();
+  const w = WEEKS.find(x => wid(x) === id);
+  renderTabs(id);
+  const r = w.reading || {};
+  const d = w.diary || {};
+  const notices = list(w.notices);
+  $("#main").innerHTML = `
+    ${note ? `<div class="err">${esc(note)}</div>` : ""}
+    <div class="weekhead">
+      <h2>第 <span class="wk">${w.no}</span> 週　課程紀錄</h2>
+      <div class="range">${esc(w.range)}</div>
+    </div>
+
+    <section class="card">
+      <h3>📚 本週上課內容</h3>
+      ${(w.courses || []).map(c => {
+        const items = list(c.items), dates = list(c.dates);
+        return `<div class="course ${esc(c.kind)}">
+          <h4>${esc(c.name)}</h4>
+          ${items.length ? `<ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>` : `<div class="empty">${esc(c.empty || "本週無")}</div>`}
+          ${dates.length ? `<div class="label">上課日期</div><div class="dates">${dates.map(x => `<span>${esc(x)}</span>`).join("")}</div>` : ""}
+        </div>`;
+      }).join("")}
+    </section>
+
+    ${notices.length ? `<section class="card notice">
+      <h3>📢 聯絡事項與叮嚀</h3>
+      <ul>${notices.map(n => `<li><span class="heart">♥</span><span>${esc(n)}</span></li>`).join("")}</ul>
+    </section>` : ""}
+
+    ${r.show && r.title ? `<section class="card reading">
+      <h3>📰 本週讀報</h3>
+      <div class="rtitle">《${esc(r.title)}》</div>
+      <div class="rmeta">${esc(r.author)}${r.source ? `<br>出處：${esc(r.source)}` : ""}</div>
+      ${r.summary ? `<div class="rbox"><b>文章大意</b><p>${esc(r.summary)}</p></div>` : ""}
+      ${(r.sheet || list(r.tasks).length) ? `<div class="rbox"><b>學習單</b>${r.sheet ? `<p>${esc(r.sheet)}</p>` : ""}
+        ${(r.tasks || []).filter(t => t && (t.t || t.d)).length ? `<ul>${r.tasks.filter(t => t && (t.t || t.d)).map(t => `<li><b>${esc(t.t)}</b>${t.d ? `<br>${esc(t.d)}` : ""}</li>`).join("")}</ul>` : ""}</div>` : ""}
+      ${r.due ? `<div class="rdue">⏰ ${esc(r.due)}</div>` : ""}
+    </section>` : ""}
+
+    <section class="card tasks">
+      <h3>✏️ 本週學習任務（我的學習小日記）</h3>
+      <div class="task"><span class="ico">🔍</span><div><b>這週的發現與想法</b><p>${esc(d.think) || '<span class="muted">—</span>'}</p></div></div>
+      <div class="task"><span class="ico">💡</span><div><b>自學小天地（讀報／主題探索）</b>
+        ${d.self ? `<p>${esc(d.self)}</p>` : `<p class="muted">孩子在紙本聯絡簿記錄自己的讀報或主題探索內容。</p>`}</div></div>
+      <div class="task"><span class="ico">⭐</span><div><b>親師對話</b><p class="muted">有想跟老師說的話，請寫在紙本聯絡簿的「親師對話」欄，並於「家長簽章」欄簽名。</p></div></div>
+    </section>`;
+}
+
+const { list: weeks, note } = await loadWeeks();
+WEEKS = weeks.sort((a, b) => b.no - a.no);
+render(note);
+window.addEventListener("hashchange", () => { render(note); window.scrollTo({ top: 0 }); });
+</script>
+</body>
+</html>

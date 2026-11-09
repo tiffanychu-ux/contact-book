@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>線上聯絡簿 後台｜老師專用</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2a24; --ink2:#55635a; --line:#d6e2d3; --bg:#f3f5ef; --card:#fff;
+    --green:#3f8f4a; --green-soft:#e8f3e4; --red:#c62828; --red-soft:#fdecea;
+    --A:#1e6fd9; --A-soft:#e7f0fd; --M:#7b3fb8; --M-soft:#f2eafb; --T:#c25a00; --T-soft:#fff0e2;
+    --R:#0f6b7a; --R-soft:#ecf7f9; --N:#c62828; --N-soft:#fdecea; --D:#3f8f4a; --D-soft:#e8f3e4;
+    --P:#475569; --P-soft:#eef1f5;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-size:17px;line-height:1.6;-webkit-text-size-adjust:100%}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 14px 120px}
+  header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#24312a;color:#fff;border-radius:16px;padding:14px 16px}
+  header .ttl{flex:1;min-width:200px}
+  header .ttl small{display:block;font-size:13px;opacity:.75;letter-spacing:.06em}
+  header .ttl b{font-size:21px;font-weight:900}
+  header .who{font-size:14px;opacity:.9}
+  button,.btn{font:inherit;font-weight:700;border-radius:10px;border:2px solid transparent;padding:8px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
+  .b-main{background:var(--green);color:#fff}
+  .b-line{background:#fff;color:var(--ink);border-color:var(--line)}
+  .b-dark{background:#fff;color:#24312a}
+  .b-danger{background:#fff;color:var(--red);border-color:#f0b9b4}
+  .b-small{padding:4px 10px;font-size:15px}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .gate{background:var(--card);border-radius:16px;padding:28px 20px;margin-top:16px;text-align:center;border:2px solid var(--line)}
+  .gate h2{margin:0 0 8px;font-size:22px}
+  .gate p{color:var(--ink2);margin:6px 0 16px}
+  .warn{background:#fff4dd;border:2px solid #f0d9a8;color:#8a5200;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:15px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:14px}
+  .bar label{font-weight:900}
+  .bar select{font:inherit;font-weight:700;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:#fff;min-width:170px}
+  .bar .sp{flex:1}
+  .pill{font-size:13px;font-weight:700;border-radius:999px;padding:2px 10px;margin-left:4px}
+  .pill.pub{background:var(--green-soft);color:var(--green)} .pill.draft{background:#fff4dd;color:#8a5200}
+
+  .sec{background:var(--card);border-radius:16px;margin-top:16px;border:2px solid var(--line);overflow:hidden}
+  .sec > .sh{display:flex;align-items:center;gap:10px;padding:12px 16px;color:#fff}
+  .sec > .sh .n{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-weight:900;flex:none}
+  .sec > .sh b{font-size:19px;font-weight:900}
+  .sec > .sh span.where{margin-left:auto;font-size:13px;opacity:.9;background:rgba(255,255,255,.18);padding:2px 9px;border-radius:999px}
+  .sec > .sb{padding:14px 16px 16px}
+  .s-basic .sh{background:var(--P)} .s-course .sh{background:#1f4f8f} .s-notice .sh{background:var(--N)}
+  .s-read .sh{background:var(--R)} .s-diary .sh{background:var(--D)} .s-pub .sh{background:#24312a}
+  .help{font-size:14px;color:var(--ink2);margin:0 0 10px}
+  .f{margin-bottom:14px}
+  .f > label{display:block;font-weight:900;margin-bottom:4px;font-size:16px}
+  .f > label small{font-weight:500;color:var(--ink2);font-size:13px;margin-left:6px}
+  input[type=text],input[type=number],input[type=date],textarea{width:100%;font:inherit;font-size:17px;padding:9px 11px;border-radius:10px;border:2px solid var(--line);background:#fcfdfb;color:var(--ink)}
+  input:focus,textarea:focus{outline:none;border-color:var(--green);background:#fff}
+  textarea{resize:vertical;min-height:46px;line-height:1.5}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .inline{display:flex;gap:8px;align-items:center}
+  .inline input{flex:1}
+  .course{border-radius:12px;padding:12px;margin-bottom:12px;border-left:7px solid}
+  .course.A{background:var(--A-soft);border-color:var(--A)} .course.M{background:var(--M-soft);border-color:var(--M)} .course.T{background:var(--T-soft);border-color:var(--T)}
+  .course h4{margin:0 0 8px;font-size:19px;font-weight:900}
+  .course.A h4{color:var(--A)} .course.M h4{color:var(--M)} .course.T h4{color:var(--T)}
+  .rows .r{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px}
+  .rows .r .mk{flex:none;width:22px;text-align:center;padding-top:10px;color:#3a6fd8;font-weight:900}
+  .rows .r .fields{flex:1;display:flex;flex-direction:column;gap:6px}
+  .rows .r .x{flex:none;width:38px;height:42px;border-radius:10px;border:2px solid var(--line);background:#fff;color:var(--red);font-size:18px;padding:0;justify-content:center}
+  .rows .add{margin-top:2px}
+  .switch{display:flex;align-items:center;gap:10px;font-weight:900;background:var(--R-soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;cursor:pointer}
+  .switch input{width:22px;height:22px}
+  .readbody.off{opacity:.45;pointer-events:none}
+  .pubopt{display:grid;gap:8px}
+  .pubopt label{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+  .pubopt input{width:20px;height:20px;margin-top:3px}
+  .pubopt b{display:block}
+  .pubopt small{color:var(--ink2)}
+  .pubopt label:has(input:checked){border-color:var(--green);background:var(--green-soft)}
+  .danger{margin-top:22px;text-align:right}
+  .save{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);border-top:2px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(6px);z-index:5}
+  .save .in{max-width:820px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .save .st{flex:1;font-size:15px;color:var(--ink2)}
+  .save .st.dirty{color:#8a5200;font-weight:700}
+  .save .st.ok{color:var(--green);font-weight:700}
+  .save .st.bad{color:var(--red);font-weight:700}
+  .save .b-main{font-size:18px;padding:10px 22px}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:9;padding:16px}
+  .modal .box{background:#fff;border-radius:16px;padding:18px;max-width:420px;width:100%}
+  .modal .box p{margin:0 0 14px;font-size:17px}
+  .modal .box .acts{display:flex;gap:8px;justify-content:flex-end}
+  [hidden]{display:none !important}
+  @media (max-width:540px){ .row2{grid-template-columns:1fr} header .ttl b{font-size:19px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="ttl"><small>老師專用・家長看不到這一頁</small><b>線上聯絡簿　後台</b></div>
+    <span class="who" id="who"></span>
+    <a class="btn b-dark b-small" href="./" target="_blank" rel="noopener">👀 看前台</a>
+    <button class="b-dark b-small" id="btnOut" hidden>登出</button>
+  </header>
+
+  <div id="gate" class="gate">
+    <h2>請先登入</h2>
+    <p>用你的 Google 帳號登入後，才能修改每週的聯絡簿內容。</p>
+    <button class="b-main" id="btnIn">🔑 用 Google 帳號登入</button>
+    <div id="gateMsg"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="bar">
+      <label for="sel">編輯週次</label>
+      <select id="sel"></select>
+      <span class="sp"></span>
+      <button class="b-line" id="btnNew">＋ 新增下一週</button>
+      <button class="b-line" id="btnSeed" hidden>⤓ 匯入第 11 週</button>
+    </div>
+    <div id="appMsg"></div>
+    <form id="form" autocomplete="off" onsubmit="return false"></form>
+  </div>
+</div>
+
+<div class="save" id="saveBar" hidden>
+  <div class="in">
+    <div class="st" id="st">尚未修改</div>
+    <button class="b-main" id="btnSave">💾 儲存</button>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden><div class="box"><p id="mText"></p><div class="acts"><button class="b-line" id="mNo">取消</button><button class="b-main" id="mYes">確定</button></div></div></div>
+
+<script type="module">
+import { loadFirebase, weekId, addDays, rangeText } from "./js/fb.js";
+import { ADMIN_EMAILS } from "./js/firebase-config.js";
+import { SEED_WEEKS, blankWeek } from "./js/seed.js";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+
+let fb = null, weeks = [], cur = null, isNew = false, dirty = false;
+
+/* ---------- 小工具 ---------- */
+function ask(text, yes = "確定") {
+  return new Promise(res => {
+    $("#mText").textContent = text; $("#mYes").textContent = yes; $("#modal").hidden = false;
+    const done = v => { $("#modal").hidden = true; res(v); };
+    $("#mYes").onclick = () => done(true); $("#mNo").onclick = () => done(false);
+  });
+}
+function status(text, cls = "") { const s = $("#st"); s.textContent = text; s.className = "st " + cls; }
+function setDirty(v) { dirty = v; if (v) status("● 有修改還沒儲存", "dirty"); }
+window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+/** 補齊缺少的欄位，避免舊資料少了某一區就壞掉 */
+function normalize(w) {
+  const b = blankWeek(w.no);
+  const out = { ...b, ...w, reading: { ...b.reading, ...(w.reading || {}) }, diary: { ...b.diary, ...(w.diary || {}) } };
+  out.courses = b.courses.map(bc => ({ ...bc, ...((w.courses || []).find(c => c.kind === bc.kind) || {}) }));
+  return out;
+}
+
+/* ---------- 可新增／刪除的列 ---------- */
+function rowsHTML(key, values, { mark = "•", ph = "", pair = false } = {}) {
+  const vals = values.length ? values : [pair ? { t: "", d: "" } : ""];
+  return `<div class="rows" data-key="${key}" data-pair="${pair ? 1 : ""}" data-mark="${esc(mark)}" data-ph="${esc(ph)}">
+    ${vals.map(v => rowHTML(v, mark, ph, pair)).join("")}
+    <button type="button" class="b-line b-small add">＋ 新增一行</button>
+  </div>`;
+}
+function rowHTML(v, mark, ph, pair) {
+  const fields = pair
+    ? `<input type="text" class="pt" placeholder="任務名稱，例如：任務一｜朋友充電站" value="${esc(v.t)}">
+       <textarea class="pd" rows="2" placeholder="任務說明">${esc(v.d)}</textarea>`
+    : `<textarea class="pv" rows="1" placeholder="${esc(ph)}">${esc(v)}</textarea>`;
+  return `<div class="r"><span class="mk">${esc(mark)}</span><div class="fields">${fields}</div><button type="button" class="x" title="刪除這一行" aria-label="刪除這一行">✕</button></div>`;
+}
+function readRows(key) {
+  const box = document.querySelector(`.rows[data-key="${key}"]`);
+  const pair = !!box.dataset.pair;
+  return [...box.querySelectorAll(".r")].map(r => pair
+    ? { t: r.querySelector(".pt").value.trim(), d: r.querySelector(".pd").value.trim() }
+    : r.querySelector(".pv").value.trim()
+  ).filter(v => pair ? (v.t || v.d) : v);
+}
+
+/* ---------- 表單 ---------- */
+function field(id, label, value, { hint = "", area = false, ph = "", type = "text" } = {}) {
+  return `<div class="f"><label for="${id}">${label}${hint ? `<small>${hint}</small>` : ""}</label>
+    ${area ? `<textarea id="${id}" rows="2" placeholder="${esc(ph)}">${esc(value)}</textarea>`
+           : `<input id="${id}" type="${type}" placeholder="${esc(ph)}" value="${esc(value)}">`}</div>`;
+}
+
+function renderForm() {
+  const w = cur, r = w.reading, d = w.diary;
+  $("#form").innerHTML = `
+  <section class="sec s-basic"><div class="sh"><span class="n">1</span><b>基本資料</b><span class="where">前台：週次標題</span></div><div class="sb">
+    <div class="row2">
+      ${field("fNo", "第幾週", w.no, { type: "number", hint: isNew ? "" : "（已建立的週次不能改）" })}
+      ${field("fStart", "這週的星期一", w.start, { type: "date", hint: "選好會自動算日期範圍" })}
+    </div>
+    ${field("fRange", "日期範圍", w.range, { ph: "例如：11月9日～11月13日", hint: "家長看到的文字，可以自己改" })}
+  </div></section>
+
+  <section class="sec s-course"><div class="sh"><span class="n">2</span><b>本週上課內容</b><span class="where">前台：第 1 區</span></div><div class="sb">
+    <p class="help">每一格寫一項，按「＋ 新增一行」可以加；不要的按 ✕ 刪掉。本週沒上某門課，就把「上課內容」清空，前台會顯示下面那句「本週無…」。</p>
+    ${w.courses.map(c => `
+      <div class="course ${c.kind}">
+        <h4>${esc(c.name)}</h4>
+        <div class="f"><label>上課內容<small>一格一項</small></label>${rowsHTML("items-" + c.kind, c.items, { ph: "例如：六何法，為誰發明設計師！" })}</div>
+        <div class="f"><label>上課日期<small>一格一組，例如：A 組 11/10（二）</small></label>${rowsHTML("dates-" + c.kind, c.dates, { ph: "例如：A 組 11/10（二）、11/11（三）" })}</div>
+        ${field("empty-" + c.kind, "本週沒上課時顯示", c.empty, { ph: "留空會顯示「本週無」" })}
+      </div>`).join("")}
+  </div></section>
+
+  <section class="sec s-notice"><div class="sh"><span class="n">3</span><b>聯絡事項與叮嚀</b><span class="where">前台：第 2 區</span></div><div class="sb">
+    <p class="help">一格就是前台的一個 ♥。全部清空的話，前台這一區會隱藏。</p>
+    ${rowsHTML("notices", w.notices, { mark: "♥", ph: "例如：讀報學習單 11/12(四）中午12點前繳交" })}
+  </div></section>
+
+  <section class="sec s-read"><div class="sh"><span class="n">4</span><b>本週讀報</b><span class="where">前台：第 3 區</span></div><div class="sb">
+    <label class="switch"><input type="checkbox" id="rShow" ${r.show ? "checked" : ""}> 這週有讀報作業（打勾才會在前台顯示）</label>
+    <div class="readbody ${r.show ? "" : "off"}" id="readBody">
+      ${field("rTitle", "篇名", r.title, { hint: "不用加《》，前台會自動加", ph: "例如：朋友的力量" })}
+      ${field("rAuthor", "作者", r.author, { ph: "例如：文／臺中市龍津國小四年丙班 陳芃妍" })}
+      ${field("rSource", "出處", r.source, { ph: "例如：《國語週刊》第 2346 期…" })}
+      ${field("rSummary", "文章大意", r.summary, { area: true, hint: "請用自己的話寫一兩句，不要貼全文" })}
+      ${field("rSheet", "學習單說明", r.sheet, { area: true })}
+      <div class="f"><label>學習單任務<small>每個任務一組：名稱＋說明</small></label>${rowsHTML("rtasks", r.tasks, { pair: true, mark: "✎" })}</div>
+      ${field("rDue", "繳交期限", r.due, { ph: "例如：11/12(四）中午12點前繳交" })}
+    </div>
+  </div></section>
+
+  <section class="sec s-diary"><div class="sh"><span class="n">5</span><b>本週學習任務（我的學習小日記）</b><span class="where">前台：第 4 區</span></div><div class="sb">
+    ${field("dThink", "🔍 這週的發現與想法", d.think, { area: true, ph: "例如：平興國中發明展參訪學習單。" })}
+    ${field("dSelf", "💡 自學小天地（讀報／主題探索）", d.self, { area: true, hint: "留空會顯示預設提醒文字" })}
+    <p class="help">⭐「親師對話」是固定文字，不用每週填。</p>
+  </div></section>
+
+  <section class="sec s-pub"><div class="sh"><span class="n">6</span><b>要讓家長看到嗎？</b></div><div class="sb">
+    <div class="pubopt">
+      <label><input type="radio" name="pub" value="0" ${w.published ? "" : "checked"}><span><b>📝 草稿</b><small>先存起來，家長看不到</small></span></label>
+      <label><input type="radio" name="pub" value="1" ${w.published ? "checked" : ""}><span><b>✅ 發布</b><small>按儲存後，家長打開連結就看得到</small></span></label>
+    </div>
+    ${isNew ? "" : `<div class="danger"><button type="button" class="b-danger b-small" id="btnDel">🗑 刪除第 ${w.no} 週</button></div>`}
+  </div></section>`;
+
+  const no = $("#fNo"); no.disabled = !isNew; no.min = 1;
+  autoGrow();
+  status(isNew ? "新的一週，還沒儲存" : "尚未修改");
+  dirty = isNew;
+  if (isNew) status("● 新的一週，還沒儲存", "dirty");
+  $("#btnDel")?.addEventListener("click", delWeek);
+}
+
+function autoGrow(root = document) {
+  root.querySelectorAll("textarea").forEach(t => { t.style.height = "auto"; t.style.height = (t.scrollHeight + 4) + "px"; });
+}
+
+$("#form").addEventListener("input", e => {
+  setDirty(true);
+  if (e.target.tagName === "TEXTAREA") autoGrow(e.target.parentElement);
+  if (e.target.id === "fStart" && e.target.value) $("#fRange").value = rangeText(e.target.value);
+  if (e.target.id === "rShow") $("#readBody").classList.toggle("off", !e.target.checked);
+});
+$("#form").addEventListener("change", e => {
+  if (e.target.id === "rShow") { $("#readBody").classList.toggle("off", !e.target.checked); setDirty(true); }
+  if (e.target.name === "pub") setDirty(true);
+});
+$("#form").addEventListener("click", e => {
+  const box = e.target.closest(".rows");
+  if (!box) return;
+  if (e.target.classList.contains("add")) {
+    e.target.insertAdjacentHTML("beforebegin", rowHTML(box.dataset.pair ? { t: "", d: "" } : "", box.dataset.mark, box.dataset.ph, !!box.dataset.pair));
+    const rows = box.querySelectorAll(".r"); rows[rows.length - 1].querySelector("input,textarea").focus();
+    setDirty(true);
+  } else if (e.target.classList.contains("x")) {
+    const rows = box.querySelectorAll(".r");
+    if (rows.length > 1) e.target.closest(".r").remove();
+    else e.target.closest(".r").querySelectorAll("input,textarea").forEach(i => i.value = "");
+    setDirty(true);
+  }
+});
+
+function collect() {
+  const v = id => $("#" + id).value.trim();
+  return {
+    no: Number($("#fNo").value),
+    start: $("#fStart").value,
+    range: v("fRange"),
+    published: document.querySelector('input[name=pub]:checked').value === "1",
+    courses: cur.courses.map(c => ({ kind: c.kind, name: c.name, items: readRows("items-" + c.kind), dates: readRows("dates-" + c.kind), empty: v("empty-" + c.kind) })),
+    notices: readRows("notices"),
+    reading: { show: $("#rShow").checked, title: v("rTitle").replace(/^《|》$/g, ""), author: v("rAuthor"), source: v("rSource"), summary: v("rSummary"), sheet: v("rSheet"), tasks: readRows("rtasks"), due: v("rDue") },
+    diary: { think: v("dThink"), self: v("dSelf") }
+  };
+}
+
+/* ---------- 讀寫資料 ---------- */
+async function loadAll(selectNo) {
+  const { collection, getDocs } = fb.fs;
+  const snap = await getDocs(collection(fb.db, "weeks"));
+  weeks = snap.docs.map(d => normalize(d.data())).filter(w => typeof w.no === "number").sort((a, b) => b.no - a.no);
+  $("#btnSeed").hidden = weeks.some(w => w.no === 11);
+  fillSelect();
+  if (!weeks.length) {
+    $("#form").innerHTML = `<div class="gate"><h2>還沒有任何週次</h2><p>按上方「⤓ 匯入第 11 週」把目前的內容放進資料庫，或按「＋ 新增下一週」從空白開始。</p></div>`;
+    $("#saveBar").hidden = true; cur = null; return;
+  }
+  const pick = weeks.find(w => w.no === selectNo) || weeks[0];
+  openWeek(pick, false);
+}
+
+function fillSelect(extra) {
+  const all = extra ? [extra, ...weeks] : weeks;
+  $("#sel").innerHTML = all.map(w => `<option value="${w.no}">第 ${w.no} 週${w === extra ? "（新）" : w.published ? "　✅ 已發布" : "　📝 草稿"}</option>`).join("");
+}
+
+function openWeek(w, asNew) {
+  cur = normalize(clone(w)); isNew = asNew;
+  fillSelect(asNew ? cur : null);
+  $("#sel").value = String(cur.no);
+  $("#saveBar").hidden = false;
+  renderForm();
+}
+
+$("#sel").addEventListener("change", async e => {
+  const no = Number(e.target.value);
+  if (dirty && !(await ask("這一週有修改還沒儲存，確定要換週嗎？沒存的會不見。", "不存，換週"))) { $("#sel").value = String(cur.no); return; }
+  dirty = false;
+  const w = weeks.find(x => x.no === no); if (w) openWeek(w, false);
+});
+
+$("#btnNew").addEventListener("click", async () => {
+  if (dirty && !(await ask("目前有修改還沒儲存，確定要新增下一週嗎？沒存的會不見。", "不存，繼續"))) return;
+  const last = weeks[0];
+  let w;
+  if (last) {
+    w = clone(last);
+    w.no = last.no + 1;
+    w.start = last.start ? addDays(last.start, 7) : "";
+    w.range = rangeText(w.start);
+    w.published = false;
+  } else {
+    w = blankWeek(11);
+  }
+  openWeek(w, true);
+  $("#appMsg").innerHTML = last ? `<div class="warn">已複製第 ${last.no} 週的內容當底稿，請把要換的地方改掉再儲存。</div>` : "";
+});
+
+$("#btnSeed").addEventListener("click", async () => {
+  if (!(await ask("要把第 11 週的內容（和目前線上聯絡簿相同）匯入資料庫嗎？"))) return;
+  try {
+    const s = SEED_WEEKS[0];
+    await fb.fs.setDoc(fb.fs.doc(fb.db, "weeks", weekId(s.no)), { ...s, updatedAt: fb.fs.serverTimestamp() });
+    $("#appMsg").innerHTML = "";
+    dirty = false;
+    await loadAll(11);
+    status("✓ 已匯入第 11 週", "ok");
+  } catch (e) { showErr(e); }
+});
+
+$("#btnSave").addEventListener("click", save);
+async function save() {
+  const data = collect();
+  if (!Number.isInteger(data.no) || data.no < 1) { status("✕ 請填正確的週次", "bad"); return; }
+  if (isNew && weeks.some(w => w.no === data.no)) { status(`✕ 第 ${data.no} 週已經存在，請換一個週次`, "bad"); return; }
+  $("#btnSave").disabled = true; status("儲存中…");
+  try {
+    await fb.fs.setDoc(fb.fs.doc(fb.db, "weeks", weekId(data.no)), { ...data, updatedAt: fb.fs.serverTimestamp() });
+    dirty = false;
+    $("#appMsg").innerHTML = "";
+    await loadAll(data.no);
+    const t = new Date().toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit" });
+    status(`✓ ${t} 已儲存${data.published ? "，家長看得到" : "（草稿，家長看不到）"}`, "ok");
+  } catch (e) { showErr(e); }
+  $("#btnSave").disabled = false;
+}
+
+async function delWeek() {
+  if (!(await ask(`確定要刪除第 ${cur.no} 週嗎？刪除後無法復原。`, "刪除"))) return;
+  try {
+    await fb.fs.deleteDoc(fb.fs.doc(fb.db, "weeks", weekId(cur.no)));
+    dirty = false;
+    await loadAll();
+    status(`✓ 已刪除`, "ok");
+  } catch (e) { showErr(e); }
+}
+
+function showErr(e) {
+  console.error(e);
+  const denied = String(e && (e.code || e.message)).includes("permission");
+  status(denied ? "✕ 沒有權限：這個帳號不能修改（請確認資料庫規則）" : "✕ 儲存失敗：" + (e.code || e.message), "bad");
+}
+
+/* ---------- 登入 ---------- */
+async function boot() {
+  try { fb = await loadFirebase(); } catch (e) { fb = null; }
+  if (!fb) {
+    $("#gateMsg").innerHTML = `<div class="warn">還沒有設定 Firebase（js/firebase-config.js），暫時無法登入。</div>`;
+    $("#btnIn").disabled = true; return;
+  }
+  const { onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = fb.au;
+  $("#btnIn").onclick = async () => {
+    try { await signInWithPopup(fb.auth, new GoogleAuthProvider()); }
+    catch (e) { $("#gateMsg").innerHTML = `<div class="warn">登入沒有成功：${esc(e.code || e.message)}</div>`; }
+  };
+  $("#btnOut").onclick = async () => {
+    if (dirty && !(await ask("有修改還沒儲存，確定要登出嗎？", "登出"))) return;
+    dirty = false; signOut(fb.auth);
+  };
+  onAuthStateChanged(fb.auth, async user => {
+    $("#btnOut").hidden = !user;
+    $("#who").textContent = user ? user.email : "";
+    if (!user) { $("#gate").hidden = false; $("#app").hidden = true; $("#saveBar").hidden = true; return; }
+    if (!ADMIN_EMAILS.includes((user.email || "").toLowerCase())) {
+      $("#gate").hidden = false; $("#app").hidden = true; $("#saveBar").hidden = true;
+      $("#gateMsg").innerHTML = `<div class="warn">你登入的是 <b>${esc(user.email)}</b>，這個帳號沒有修改權限。請登出後換老師的帳號。</div>`;
+      return;
+    }
+    $("#gate").hidden = true; $("#app").hidden = false; $("#gateMsg").innerHTML = "";
+    try { await loadAll(); } catch (e) { $("#appMsg").innerHTML = `<div class="warn">讀取資料失敗：${esc(e.code || e.message)}</div>`; }
+  });
+}
+boot();
+</script>
+</body>
+</html>
