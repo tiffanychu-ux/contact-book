@@ -226,7 +226,13 @@ function renderForm() {
     ${rowsHTML("notices", w.notices, { mark: "♥", ph: "例如：讀報學習單 11/12(四）中午12點前繳交" })}
   </div></section>
 
-  <section class="sec s-read"><div class="sh"><span class="n">4</span><b>本週讀報</b><span class="where">前台：第 3 區</span></div><div class="sb">
+  <section class="sec s-diary"><div class="sh"><span class="n">4</span><b>本週學習任務（我的學習小日記）</b><span class="where">前台：第 3 區</span></div><div class="sb">
+    ${field("dThink", "🔍 這週的發現與想法", d.think, { area: true, ph: "例如：平興國中發明展參訪學習單。" })}
+    ${field("dSelf", "💡 自學小天地（讀報／主題探索）", d.self, { area: true, hint: "留空會顯示預設提醒文字" })}
+    <p class="help">⭐「親師對話」是固定文字，不用每週填。</p>
+  </div></section>
+
+  <section class="sec s-read"><div class="sh"><span class="n">5</span><b>本週讀報</b><span class="where">前台：第 4 區</span></div><div class="sb">
     <label class="switch"><input type="checkbox" id="rShow" ${r.show ? "checked" : ""}> 這週有讀報作業（打勾才會在前台顯示）</label>
     <div class="readbody ${r.show ? "" : "off"}" id="readBody">
       ${field("rTitle", "篇名", r.title, { hint: "不用加《》，前台會自動加", ph: "例如：朋友的力量" })}
@@ -237,12 +243,6 @@ function renderForm() {
       <div class="f"><label>學習單任務<small>每個任務一組：名稱＋說明</small></label>${rowsHTML("rtasks", r.tasks, { pair: true, mark: "✎" })}</div>
       ${field("rDue", "繳交期限", r.due, { ph: "例如：11/12(四）中午12點前繳交" })}
     </div>
-  </div></section>
-
-  <section class="sec s-diary"><div class="sh"><span class="n">5</span><b>本週學習任務（我的學習小日記）</b><span class="where">前台：第 4 區</span></div><div class="sb">
-    ${field("dThink", "🔍 這週的發現與想法", d.think, { area: true, ph: "例如：平興國中發明展參訪學習單。" })}
-    ${field("dSelf", "💡 自學小天地（讀報／主題探索）", d.self, { area: true, hint: "留空會顯示預設提醒文字" })}
-    <p class="help">⭐「親師對話」是固定文字，不用每週填。</p>
   </div></section>
 
   <section class="sec s-pub"><div class="sh"><span class="n">6</span><b>要讓家長看到嗎？</b></div><div class="sb">

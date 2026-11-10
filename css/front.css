@@ -65,6 +65,7 @@
   .task .ico{font-size:24px;line-height:1.3;flex:none}
   .task b{font-size:19px;font-weight:900;display:block}
   .task p{margin:2px 0 0;font-size:18px}
+  .task p.hl{font-size:19px;font-weight:700}
   .task p.muted{color:var(--ink2);font-size:16px}
   .groups{font-size:16px;color:var(--ink2)}
   .groups table{border-collapse:collapse;width:100%;font-size:16px}

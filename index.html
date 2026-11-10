@@ -108,6 +108,14 @@ function render(note) {
       <ul>${notices.map(n => `<li><span class="heart">♥</span><span>${esc(n)}</span></li>`).join("")}</ul>
     </section>` : ""}
 
+    <section class="card tasks">
+      <h3>✏️ 本週學習任務（我的學習小日記）</h3>
+      <div class="task"><span class="ico">🔍</span><div><b>這週的發現與想法</b><p class="hl">${esc(d.think) || '<span class="muted">—</span>'}</p></div></div>
+      <div class="task"><span class="ico">💡</span><div><b>自學小天地（讀報／主題探索）</b>
+        ${d.self ? `<p class="hl">${esc(d.self)}</p>` : `<p class="muted">孩子在紙本聯絡簿記錄自己的讀報或主題探索內容。</p>`}</div></div>
+      <div class="task"><span class="ico">⭐</span><div><b>親師對話</b><p class="muted">有想跟老師說的話，請寫在紙本聯絡簿的「親師對話」欄，並於「家長簽章」欄簽名。</p></div></div>
+    </section>
+
     ${r.show && r.title ? `<section class="card reading">
       <h3>📰 本週讀報</h3>
       <div class="rtitle">《${esc(r.title)}》</div>
@@ -116,15 +124,7 @@ function render(note) {
       ${(r.sheet || list(r.tasks).length) ? `<div class="rbox"><b>學習單</b>${r.sheet ? `<p>${esc(r.sheet)}</p>` : ""}
         ${(r.tasks || []).filter(t => t && (t.t || t.d)).length ? `<ul>${r.tasks.filter(t => t && (t.t || t.d)).map(t => `<li><b>${esc(t.t)}</b>${t.d ? `<br>${esc(t.d)}` : ""}</li>`).join("")}</ul>` : ""}</div>` : ""}
       ${r.due ? `<div class="rdue">⏰ ${esc(r.due)}</div>` : ""}
-    </section>` : ""}
-
-    <section class="card tasks">
-      <h3>✏️ 本週學習任務（我的學習小日記）</h3>
-      <div class="task"><span class="ico">🔍</span><div><b>這週的發現與想法</b><p>${esc(d.think) || '<span class="muted">—</span>'}</p></div></div>
-      <div class="task"><span class="ico">💡</span><div><b>自學小天地（讀報／主題探索）</b>
-        ${d.self ? `<p>${esc(d.self)}</p>` : `<p class="muted">孩子在紙本聯絡簿記錄自己的讀報或主題探索內容。</p>`}</div></div>
-      <div class="task"><span class="ico">⭐</span><div><b>親師對話</b><p class="muted">有想跟老師說的話，請寫在紙本聯絡簿的「親師對話」欄，並於「家長簽章」欄簽名。</p></div></div>
-    </section>`;
+    </section>` : ""}`;
 }
 
 const { list: weeks, note } = await loadWeeks();
