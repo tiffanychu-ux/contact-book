@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/front.css">
+<link rel="stylesheet" href="css/front.css?v=20261117">
 </head>
 <body>
 <div class="wrap">
@@ -105,7 +105,7 @@ function render(note) {
 
     ${notices.length ? `<section class="card notice">
       <h3>📢 聯絡事項與叮嚀</h3>
-      <ul>${notices.map(n => `<li><span class="heart">♥</span><span>${esc(n)}</span></li>`).join("")}</ul>
+      <ul>${notices.map(n => `<li><span class="heart">♥</span><span class="ntext">${esc(n)}</span></li>`).join("")}</ul>
     </section>` : ""}
 
     <section class="card tasks">

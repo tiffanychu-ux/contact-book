@@ -2,6 +2,7 @@
     --ink:#1f2a24; --ink2:#46544b; --line:#d6e2d3; --paper:#fbfcf7; --card:#ffffff;
     --green:#3f8f4a; --green-soft:#e8f3e4; --red:#c62828; --red-soft:#fdecea;
     --amber:#b26a00; --amber-soft:#fff4dd;
+    --navy:#1a3a8a;  /* 老師每週填寫的作業與叮嚀 */
     --A:#1e6fd9; --A-soft:#e7f0fd;  /* 探索研究 */
     --M:#7b3fb8; --M-soft:#f2eafb;  /* 多元智慧 */
     --T:#c25a00; --T-soft:#fff0e2;  /* 主題課程／活動 */
@@ -65,7 +66,8 @@
   .task .ico{font-size:24px;line-height:1.3;flex:none}
   .task b{font-size:19px;font-weight:900;display:block}
   .task p{margin:2px 0 0;font-size:18px}
-  .task p.hl{font-size:19px;font-weight:700}
+  .task p.hl{font-size:19px;font-weight:700;color:var(--navy)}
+  .notice li .ntext{color:var(--navy)}
   .task p.muted{color:var(--ink2);font-size:16px}
   .groups{font-size:16px;color:var(--ink2)}
   .groups table{border-collapse:collapse;width:100%;font-size:16px}
